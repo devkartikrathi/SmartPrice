@@ -1,0 +1,162 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(cuid())
+  clerkId     String   @unique
+  email       String   @unique
+  firstName   String?
+  lastName    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  isOnboarded Boolean  @default(false)
+
+  conversations   Conversation[]
+  cartItems       CartItem[]
+  preferences     UserPreference?
+  onboarding      OnboardingData?
+  creditCards     CreditCard[]
+  spendingProfile SpendingProfile?
+
+  @@map("users")
+}
+
+model Conversation {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages Message[]
+
+  @@map("conversations")
+}
+
+model Message {
+  id             String   @id @default(cuid())
+  conversationId String
+  content        String
+  type           String // 'user' | 'bot'
+  intent         String?
+  agentUsed      String?
+  data           Json?
+  actions        Json?
+  status         String   @default("success") // 'loading' | 'success' | 'error'
+  createdAt      DateTime @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@map("messages")
+}
+
+model CartItem {
+  id       String @id @default(cuid())
+  userId   String
+  title    String
+  price    Float
+  platform String
+  quantity Int    @default(1)
+  data     Json?
+  url      String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("cart_items")
+}
+
+model UserPreference {
+  id            String  @id @default(cuid())
+  userId        String  @unique
+  theme         String  @default("light") // 'light' | 'dark'
+  notifications Boolean @default(true)
+  language      String  @default("en")
+  currency      String  @default("INR")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_preferences")
+}
+
+model OnboardingData {
+  id                        String   @id @default(cuid())
+  userId                    String   @unique
+  occupation                String
+  industry                  String?
+  companySize               String? // '1-10', '11-50', '51-200', '201-500', '500+'
+  monthlyIncome             String? // '0-25k', '25k-50k', '50k-100k', '100k-200k', '200k+'
+  monthlySpending           String? // '0-10k', '10k-25k', '25k-50k', '50k-100k', '100k+'
+  primarySpendingCategory   String // 'shopping', 'travel', 'food', 'entertainment', 'utilities', 'other'
+  secondarySpendingCategory String?
+  shoppingFrequency         String // 'daily', 'weekly', 'monthly', 'quarterly'
+  preferredPlatforms        String[] // ['amazon', 'flipkart', 'myntra', etc.]
+  travelFrequency           String? // 'never', 'monthly', 'quarterly', 'yearly'
+  groceryFrequency          String? // 'daily', 'weekly', 'monthly'
+  creditScore               String? // 'excellent', 'good', 'fair', 'poor'
+  investmentExperience      String? // 'beginner', 'intermediate', 'advanced'
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("onboarding_data")
+}
+
+model CreditCard {
+  id                    String   @id @default(cuid())
+  userId                String
+  cardName              String // e.g., "HDFC Bank Millennia"
+  cardType              String // 'credit', 'debit', 'prepaid'
+  bankName              String
+  cardNumber            String? // Last 4 digits only for security
+  expiryMonth           Int?
+  expiryYear            Int?
+  isDefault             Boolean  @default(false)
+  isActive              Boolean  @default(true)
+  annualFee             Float?
+  interestRate          Float?
+  creditLimit           Float?
+  currentBalance        Float    @default(0)
+  rewardsProgram        String? // 'cashback', 'points', 'miles', 'none'
+  cashbackRate          Float?
+  foreignTransactionFee Float?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("credit_cards")
+}
+
+model SpendingProfile {
+  id                    String    @id @default(cuid())
+  userId                String    @unique
+  totalMonthlySpending  Float     @default(0)
+  shoppingSpending      Float     @default(0)
+  travelSpending        Float     @default(0)
+  foodSpending          Float     @default(0)
+  entertainmentSpending Float     @default(0)
+  utilitiesSpending     Float     @default(0)
+  otherSpending         Float     @default(0)
+  averageOrderValue     Float     @default(0)
+  totalOrders           Int       @default(0)
+  preferredTime         String? // 'morning', 'afternoon', 'evening', 'night'
+  preferredDay          String? // 'monday', 'tuesday', etc.
+  lastPurchaseDate      DateTime?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("spending_profiles")
+}
