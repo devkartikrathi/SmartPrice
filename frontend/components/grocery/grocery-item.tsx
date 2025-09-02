@@ -15,23 +15,23 @@ interface GroceryItemProps {
 }
 
 export function GroceryItem({ item }: GroceryItemProps) {
-  const [selectedIndex, setSelectedIndex] = useState(item.selectedIndex || 0);
-  const [quantity, setQuantity] = useState(item.quantity || 1);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [quantity, setQuantity] = useState(1);
   const { addToCart } = useAppStore();
 
-  const selectedProduct = item.options[selectedIndex];
+  const selectedProduct = item;
 
   const handleAddToCart = () => {
     if (selectedProduct) {
       for (let i = 0; i < quantity; i++) {
         addToCart({
           id: `${selectedProduct.platform}-${Date.now()}-${i}`,
-          name: `${item.name} - ${selectedProduct.title}`,
+          name: selectedProduct.title,
           originalPrice: selectedProduct.price,
           bestPrice: selectedProduct.price,
           platform: selectedProduct.platform,
-          url: selectedProduct.url,
-          image: selectedProduct.image,
+          url: '#',
+          image: '',
         });
       }
     }
@@ -47,9 +47,9 @@ export function GroceryItem({ item }: GroceryItemProps) {
           <div className="flex flex-col space-y-4">
             {/* Item Name */}
             <div>
-              <h4 className="font-semibold text-lg">{item.name}</h4>
+              <h4 className="font-semibold text-lg">{item.title}</h4>
               <p className="text-sm text-muted-foreground">
-                {item.options.length} option{item.options.length > 1 ? 's' : ''} available
+                1 option available
               </p>
             </div>
 
@@ -64,19 +64,17 @@ export function GroceryItem({ item }: GroceryItemProps) {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {item.options.map((option, index) => (
-                    <SelectItem key={index} value={index.toString()}>
-                      <div className="flex items-center justify-between w-full">
-                        <span className="truncate mr-4">{option.title}</span>
-                        <div className="flex items-center space-x-2">
-                          <Badge variant="outline" className="text-xs">
-                            {option.platform}
-                          </Badge>
-                          <span className="font-semibold">${option.price.toFixed(2)}</span>
-                        </div>
+                  <SelectItem value="0">
+                    <div className="flex items-center justify-between w-full">
+                      <span className="truncate mr-4">{item.title}</span>
+                      <div className="flex items-center space-x-2">
+                        <Badge variant="outline" className="text-xs">
+                          {item.platform}
+                        </Badge>
+                        <span className="font-semibold">${item.price.toFixed(2)}</span>
                       </div>
-                    </SelectItem>
-                  ))}
+                    </div>
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -88,11 +86,7 @@ export function GroceryItem({ item }: GroceryItemProps) {
                   <Badge variant="outline">{selectedProduct.platform}</Badge>
                   <span className="font-semibold text-lg">${selectedProduct.price.toFixed(2)}</span>
                 </div>
-                {selectedProduct.creditCardBenefit && (
-                  <Badge variant="secondary" className="text-xs">
-                    💳 {selectedProduct.creditCardBenefit}
-                  </Badge>
-                )}
+
               </div>
             )}
 
@@ -125,7 +119,7 @@ export function GroceryItem({ item }: GroceryItemProps) {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => selectedProduct && window.open(selectedProduct.url, '_blank')}
+                  onClick={() => selectedProduct && window.open('#', '_blank')}
                 >
                   <ExternalLink className="h-4 w-4 mr-1" />
                   View

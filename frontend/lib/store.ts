@@ -20,8 +20,10 @@ interface AppState {
   setTheme: (theme: 'light' | 'dark') => void;
 
   // User preferences
-  preferredCreditCard: string | null;
-  setPreferredCreditCard: (card: string | null) => void;
+  preferredCreditCard: string | undefined;
+  setPreferredCreditCard: (card: string | undefined) => void;
+  selectedCreditCards: string[];
+  setSelectedCreditCards: (cards: string[]) => void;
 
   // UI state
   sidebarOpen: boolean;
@@ -52,8 +54,10 @@ export const useAppStore = create<AppState>()(
       setTheme: (theme) => set({ theme }),
 
       // User preferences
-      preferredCreditCard: null,
+      preferredCreditCard: undefined,
       setPreferredCreditCard: (card) => set({ preferredCreditCard: card }),
+      selectedCreditCards: [],
+      setSelectedCreditCards: (cards) => set({ selectedCreditCards: cards }),
 
       // UI state
       sidebarOpen: false,
@@ -121,6 +125,7 @@ export const useAppStore = create<AppState>()(
       partialize: (state) => ({
         theme: state.theme,
         preferredCreditCard: state.preferredCreditCard,
+        selectedCreditCards: state.selectedCreditCards,
         cartItems: state.cartItems,
       }),
     }

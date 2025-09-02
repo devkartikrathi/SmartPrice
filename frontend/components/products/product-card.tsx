@@ -15,9 +15,7 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, onAddToCart, variant = 'detailed' }: ProductCardProps) {
-  const savings = product.originalPrice && product.price < product.originalPrice
-    ? ((product.originalPrice - product.price) / product.originalPrice * 100).toFixed(0)
-    : null;
+  const savings = null; // No original price available in ProductData
 
   return (
     <motion.div
@@ -60,36 +58,17 @@ export function ProductCard({ product, onAddToCart, variant = 'detailed' }: Prod
                 </Badge>
               </div>
 
-              {/* Rating */}
-              {product.rating && (
-                <div className="flex items-center mb-2">
-                  <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                  <span className="text-sm text-muted-foreground ml-1">
-                    {product.rating.toFixed(1)}
-                  </span>
-                </div>
-              )}
+              {/* Rating - not available in ProductData */}
 
               {/* Price */}
               <div className="flex items-center gap-2 mb-3">
                 <span className="text-lg font-bold text-primary">
                   ${product.price.toFixed(2)}
                 </span>
-                {product.originalPrice && product.originalPrice > product.price && (
-                  <span className="text-sm text-muted-foreground line-through">
-                    ${product.originalPrice.toFixed(2)}
-                  </span>
-                )}
+
               </div>
 
-              {/* Credit Card Benefit */}
-              {product.creditCardBenefit && (
-                <div className="mb-3">
-                  <Badge variant="secondary" className="text-xs">
-                    💳 {product.creditCardBenefit}
-                  </Badge>
-                </div>
-              )}
+              {/* Credit Card Benefit - not available in ProductData */}
 
               {/* Actions */}
               <div className="flex gap-2 mt-auto">

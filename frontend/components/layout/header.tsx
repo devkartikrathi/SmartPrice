@@ -1,14 +1,14 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useUser, SignInButton, SignUpButton, UserButton } from '@clerk/nextjs';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
-import { Badge } from '@/components/ui/badge';
 import { CreditCardSelector } from '@/components/ui/credit-card-selector';
+import { Badge } from '@/components/ui/badge';
 import { HealthStatus } from '@/components/ui/health-status';
-import { Menu, X, ShoppingCart, MessageSquare } from 'lucide-react';
+import { Menu, X, ShoppingCart } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -16,6 +16,23 @@ export function Header() {
   const { isSignedIn, user } = useUser();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { cartItems, setCartOpen, getCartItemCount } = useAppStore();
+  const [backendUp, setBackendUp] = useState<boolean | null>(null);
+
+  // Lightweight health ping for navbar dot
+  useEffect(() => {
+    const check = async () => {
+      try {
+        const base = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const res = await fetch(`${base}/health`, { cache: 'no-store' });
+        setBackendUp(res.ok);
+      } catch {
+        setBackendUp(false);
+      }
+    };
+    check();
+    const id = setInterval(check, 30000);
+    return () => clearInterval(id);
+  }, []);
 
   const cartItemCount = getCartItemCount();
 
@@ -29,26 +46,23 @@ export function Header() {
             whileTap={{ scale: 0.95 }}
             className="flex items-center space-x-2"
           >
-            <MessageSquare className="h-8 w-8 text-primary" />
             <span className="text-xl font-bold">SmartPrice</span>
           </motion.div>
         </Link>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-6">
+        {/* Desktop Navigation - Only essential elements */}
+        <nav className="hidden md:flex items-center space-x-4">
           {isSignedIn && (
             <>
-              <Link href="/chat" className="text-sm font-medium hover:text-primary transition-colors">
-                Chat
-              </Link>
-              
-              <Link href="/settings" className="text-sm font-medium hover:text-primary transition-colors">
-                Settings
-              </Link>
-              
-              {/* Credit Card Selector */}
+              {/* Minimal backend status dot */}
+              <div className="hidden sm:flex items-center" title={backendUp == null ? 'Checking backend…' : backendUp ? 'Backend: Healthy' : 'Backend: Down'}>
+                <span className={`h-2.5 w-2.5 rounded-full ${backendUp == null ? 'bg-gray-400 animate-pulse' : backendUp ? 'bg-green-500 animate-pulse' : 'bg-red-500 animate-pulse'}`}></span>
+              </div>
+
+              {/* Credit card multi-select */}
               <CreditCardSelector />
-              
+
+              {/* Shopping Cart */}
               <Button
                 variant="ghost"
                 size="sm"
@@ -68,9 +82,6 @@ export function Header() {
             </>
           )}
           
-          {/* Health Status */}
-          <HealthStatus />
-
           <ThemeToggle />
 
           {isSignedIn ? (
@@ -89,6 +100,24 @@ export function Header() {
 
         {/* Mobile Menu Button */}
         <div className="flex items-center space-x-2 md:hidden">
+          {isSignedIn && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setCartOpen(true)}
+              className="relative"
+            >
+              <ShoppingCart className="h-4 w-4" />
+              {cartItemCount > 0 && (
+                <Badge
+                  variant="destructive"
+                  className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs"
+                >
+                  {cartItemCount}
+                </Badge>
+              )}
+            </Button>
+          )}
           <ThemeToggle />
           <Button
             variant="ghost"
@@ -100,7 +129,7 @@ export function Header() {
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu - Simplified */}
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
@@ -112,38 +141,12 @@ export function Header() {
             <div className="container mx-auto px-4 py-4 space-y-4">
               {isSignedIn ? (
                 <>
-                  <Link
-                    href="/chat"
-                    className="block text-sm font-medium hover:text-primary transition-colors"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    Chat
-                  </Link>
-                  
-                  <Link
-                    href="/settings"
-                    className="block text-sm font-medium hover:text-primary transition-colors"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    Settings
-                  </Link>
-                  
-                  {/* Credit Card Selector in Mobile Menu */}
-                  <div className="pt-2">
-                    <CreditCardSelector />
+                  {/* Health Status in Mobile Menu */}
+                  <div className="pt-4 border-t">
+                    <HealthStatus />
                   </div>
                   
-                  <Button
-                    variant="ghost"
-                    onClick={() => {
-                      setCartOpen(true);
-                      setIsMenuOpen(false);
-                    }}
-                    className="justify-start w-full"
-                  >
-                    <ShoppingCart className="h-4 w-4 mr-2" />
-                    Cart ({cartItemCount})
-                  </Button>
+                  {/* User Button */}
                   <div className="pt-4 border-t">
                     <UserButton afterSignOutUrl="/" />
                   </div>
@@ -158,11 +161,6 @@ export function Header() {
                   </SignUpButton>
                 </div>
               )}
-              
-              {/* Health Status in Mobile Menu */}
-              <div className="pt-4 border-t">
-                <HealthStatus />
-              </div>
             </div>
           </motion.div>
         )}

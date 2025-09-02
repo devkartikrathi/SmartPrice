@@ -182,30 +182,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-blue-500 to-indigo-500">
-        <div className="container mx-auto px-4 text-center">
-          <div className="max-w-3xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-              Ready to Start Saving?
-            </h2>
-            <p className="text-xl text-blue-100 mb-8">
-              Join thousands of smart shoppers who are already saving money with our AI-powered platform.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg" variant="secondary" className="text-lg px-8 py-6">
-                <Link href="/chat">
-                  Start Shopping Now
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
-                                <Button asChild size="lg" variant="outline" className="text-lg px-8 py-6 text-white border-white hover:bg-white hover:text-blue-500">
-                <Link href="/cards">Explore Credit Cards</Link>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* CTA Section removed */}
     </div>
   );
 }

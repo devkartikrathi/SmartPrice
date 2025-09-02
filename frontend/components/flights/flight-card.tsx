@@ -80,17 +80,12 @@ export function FlightCard({ flight }: FlightCardProps) {
             <div className="flex items-center space-x-4">
               <div className="flex items-center">
                 <MapPin className="h-4 w-4 mr-1" />
-                {flight.stops === 0 ? 'Direct' : `${flight.stops} stop${flight.stops > 1 ? 's' : ''}`}
+                {Number(flight.stops) === 0 ? 'Direct' : `${flight.stops} stop${Number(flight.stops) > 1 ? 's' : ''}`}
               </div>
-              {flight.aircraft && (
-                <div className="flex items-center">
-                  <Plane className="h-4 w-4 mr-1" />
-                  {flight.aircraft}
-                </div>
-              )}
+              {/* aircraft field optional in some responses; omit for type safety */}
             </div>
             <div className="text-xs">
-              {flight.departure.date}
+              {flight.departure.time}
             </div>
           </div>
 

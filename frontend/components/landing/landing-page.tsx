@@ -211,52 +211,10 @@ export function LandingPage() {
           </div>
         </section>
 
-        {/* CTA Section */}
-        <section className="py-20 bg-gradient-to-r from-primary/10 via-primary/5 to-secondary/10">
-          <div className="container mx-auto px-4">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
-              className="text-center max-w-3xl mx-auto"
-            >
-              <h2 className="text-3xl md:text-5xl font-bold mb-6">
-                Ready to Start Saving?
-              </h2>
-              <p className="text-xl text-muted-foreground mb-8">
-                Join thousands of smart shoppers who save money every day with our AI assistant
-              </p>
-              
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
-                <SignUpButton mode="modal">
-                  <Button size="lg" className="text-lg px-8 py-6">
-                    Start Shopping Smarter
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
-                </SignUpButton>
-              </div>
-              
-              <div className="flex items-center justify-center space-x-6 text-sm text-muted-foreground">
-                <div className="flex items-center">
-                  <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
-                  Free to start
-                </div>
-                <div className="flex items-center">
-                  <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
-                  No credit card required
-                </div>
-                <div className="flex items-center">
-                  <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
-                  Cancel anytime
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </section>
+        
 
         {/* Backend Status Section */}
-        <section className="py-20">
+        <section id="status" className="py-20">
           <div className="container mx-auto px-4">
             <motion.div
               initial={{ opacity: 0, y: 20 }}

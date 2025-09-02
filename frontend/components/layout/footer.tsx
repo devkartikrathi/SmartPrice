@@ -5,9 +5,9 @@ import { Badge } from '@/components/ui/badge';
 import { healthAPI } from '@/lib/api';
 
 export function Footer() {
-  const { data: capabilities } = useQuery({
-    queryKey: ['capabilities'],
-    queryFn: healthAPI.getCapabilities,
+  const { data: healthStatus } = useQuery({
+    queryKey: ['health'],
+    queryFn: healthAPI.getStatus,
     refetchInterval: 60000, // Refresh every minute
   });
 
@@ -20,24 +20,18 @@ export function Footer() {
               © 2025 ADK E-commerce Orchestrator. All rights reserved.
             </p>
             
-            {capabilities && (
+            {healthStatus && (
               <div className="flex flex-wrap items-center gap-2">
                 <span className="text-xs text-muted-foreground">Powered by:</span>
-                {capabilities.features && capabilities.features.includes('Natural language processing') && (
-                  <Badge variant="secondary" className="text-xs">
-                    AI Assistant
-                  </Badge>
-                )}
-                {capabilities.features && capabilities.features.includes('Multi-platform price comparison') && (
-                  <Badge variant="secondary" className="text-xs">
-                    Price Comparison
-                  </Badge>
-                )}
-                {capabilities.features && capabilities.features.includes('Credit card optimization') && (
-                  <Badge variant="secondary" className="text-xs">
-                    Credit Card Optimization
-                  </Badge>
-                )}
+                <Badge variant="secondary" className="text-xs">
+                  AI Assistant
+                </Badge>
+                <Badge variant="secondary" className="text-xs">
+                  Price Comparison
+                </Badge>
+                <Badge variant="secondary" className="text-xs">
+                  Credit Card Optimization
+                </Badge>
               </div>
             )}
           </div>

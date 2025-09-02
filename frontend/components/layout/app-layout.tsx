@@ -3,7 +3,6 @@
 import { useUser } from '@clerk/nextjs';
 import { useState, useEffect } from 'react';
 import { Header } from './header';
-import { Navigation } from './navigation';
 import { OnboardingWizard } from '@/components/onboarding/onboarding-wizard';
 import { ShoppingCart } from '@/components/cart/shopping-cart';
 import { useAppStore } from '@/lib/store';
@@ -18,14 +17,20 @@ export function AppLayout({ children }: AppLayoutProps) {
   const { cartOpen, setCartOpen } = useAppStore();
 
   useEffect(() => {
-    if (isLoaded && user) {
-      // TODO: Check if user has completed onboarding from database
-      // For now, we'll show onboarding for new users
-      const hasCompletedOnboarding = localStorage.getItem(`onboarding_${user.id}`);
-      if (!hasCompletedOnboarding) {
-        setShowOnboarding(true);
+    const check = async () => {
+      if (!isLoaded || !user) return;
+      try {
+        const res = await fetch('/api/onboarding', { method: 'GET' });
+        if (!res.ok) throw new Error('onboarding status failed');
+        const data = await res.json();
+        setShowOnboarding(!data?.isOnboarded);
+      } catch {
+        // Fallback to local storage if API fails
+        const ls = localStorage.getItem(`onboarding_${user.id}`);
+        setShowOnboarding(!ls);
       }
-    }
+    };
+    check();
   }, [isLoaded, user]);
 
   const handleOnboardingComplete = () => {
@@ -57,11 +62,10 @@ export function AppLayout({ children }: AppLayoutProps) {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <Navigation />
-      <main className="flex-1">
+      <main className="flex-1 overflow-hidden">
         {children}
       </main>
-      <ShoppingCart open={cartOpen} onOpenChange={setCartOpen} />
+      {user && <ShoppingCart open={cartOpen} onOpenChange={setCartOpen} />}
     </div>
   );
 }
